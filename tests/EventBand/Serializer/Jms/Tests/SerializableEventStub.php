@@ -22,12 +22,12 @@ class SerializableEventStub implements Event
     /**
      * @Type("string")
      */
-    private $data;
+    private $foo;
 
-    public function __construct($name, $data)
+    public function __construct($name, $foo)
     {
         $this->name = $name;
-        $this->data = $data;
+        $this->foo = $foo;
     }
 
     public function getName()
@@ -35,8 +35,8 @@ class SerializableEventStub implements Event
         return $this->name;
     }
 
-    public function getData()
+    public function getFoo()
     {
-        return $this->data;
+        return $this->foo;
     }
 }

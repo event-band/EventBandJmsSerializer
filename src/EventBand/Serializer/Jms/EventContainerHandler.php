@@ -14,6 +14,7 @@ use JMS\Serializer\GraphNavigator;
 use JMS\Serializer\Handler\SubscribingHandlerInterface;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\JsonSerializationVisitor;
+use JMS\Serializer\Metadata\ClassMetadata;
 use JMS\Serializer\XmlDeserializationVisitor;
 use JMS\Serializer\XmlSerializationVisitor;
 
@@ -106,16 +107,22 @@ class EventContainerHandler implements SubscribingHandlerInterface
     public function serializeContainerXml(XmlSerializationVisitor $visitor, EventContainer $container, array $type, Context $context)
     {
         if (!$visitor->getDocument()) {
-            $visitor->visitArray([], ['name' => 'array'], $context);
+            /** @var ClassMetadata $metadata */
+            $metadata = $context->getMetadataFactory()->getMetadataForClass(__NAMESPACE__ . '\EventContainer');
+            $metadata->xmlRootName = 'event';
+            $visitor->startVisitingObject($metadata, $container, [], $context);
+//            $visitor->visitArray([], ['name' => 'array'], $context);
         }
-        $element = $visitor->getDocument()->createElement('event');
+
         $event = $container->getEvent();
+        $node = $visitor->getCurrentNode();
 
-        $element->setAttribute('type', $this->namingStrategy->classToType(get_class($event)));
+        $node->setAttribute('type', $this->namingStrategy->classToType(get_class($event)));
+        $data = $visitor->getDocument()->createElement('data');
 
-        $visitor->getCurrentNode()->appendChild($element);
-        $visitor->setCurrentNode($element);
-        $visitor->getNavigator()->accept($container->getEvent(), null, $context);
+        $visitor->getCurrentNode()->appendChild($data);
+        $visitor->setCurrentNode($data);
+        $visitor->getNavigator()->accept($event, null, $context);
         $visitor->revertCurrentNode();
     }
 
@@ -138,17 +145,17 @@ class EventContainerHandler implements SubscribingHandlerInterface
         if (!$data instanceof \SimpleXMLElement) {
             throw new RuntimeException(sprintf('Deserialized SimpleXMLElement data expected, got "%s"', get_class($data)));
         }
-        if (!isset($data->event) || !$data->event instanceof \SimpleXMLElement) {
+        if (!isset($data->data) || !$data->data instanceof \SimpleXMLElement) {
             throw new RuntimeException(sprintf('Deserialized data child node "event" missed'));
         }
-        if (!isset($data->event['type'])) {
+        if (!isset($data['type'])) {
             throw new RuntimeException(sprintf('Deserialized "type" attribute for d"event" node missed'));
         }
 
         $container = $this->createEventContainer();
         $visitor->startVisitingObject($context->getMetadataFactory()->getMetadataForClass(get_class($container)), $container, [], $context);
 
-        $event = $visitor->getNavigator()->accept($data->event, array('name' => $this->namingStrategy->typeToClass((string) $data->event['type'])), $context);
+        $event = $visitor->getNavigator()->accept($data->data, array('name' => $this->namingStrategy->typeToClass((string) $data['type'])), $context);
         $this->setContainerEvent($container, $event);
 
         return $container;
@@ -169,7 +176,7 @@ class EventContainerHandler implements SubscribingHandlerInterface
         $setRoot = $visitor->getRoot() === null;
         $data = array(
             'type' => $this->namingStrategy->classToType(get_class($container->getEvent())),
-            'event' => $visitor->getNavigator()->accept($container->getEvent(), null, $context)
+            'data' => $visitor->getNavigator()->accept($container->getEvent(), null, $context)
         );
 
         if ($setRoot) {
@@ -191,14 +198,14 @@ class EventContainerHandler implements SubscribingHandlerInterface
      */
     protected function deserializeContainer(GenericDeserializationVisitor $visitor, array $data, Context $context)
     {
-        if (!isset($data['event']) || !isset($data['type'])) {
+        if (!isset($data['data']) || !isset($data['type'])) {
             throw new RuntimeException('Missed properties in the deserialized data array: "event", "type"');
         }
 
         $container = $this->createEventContainer();
         $visitor->startVisitingObject($context->getMetadataFactory()->getMetadataForClass(get_class($container)), $container, [], $context);
 
-        $event = $visitor->getNavigator()->accept($data['event'], array('name' => $this->namingStrategy->typeToClass($data['type'])), $context);
+        $event = $visitor->getNavigator()->accept($data['data'], array('name' => $this->namingStrategy->typeToClass($data['type'])), $context);
 
         if (!is_object($event)) {
             throw new RuntimeException(sprintf('Deserialized Event object expected, got "%s"', gettype($event)));

@@ -58,9 +58,9 @@ class EventContainerHandlerTest extends TestCase
         $this->assertEquals(
             json_encode([
                 'type' => 'stub',
-                'event' => [
+                'data' => [
                     'name' => $container->getEvent()->getName(),
-                    'data' => $container->getEvent()->getData()
+                    'foo' => $container->getEvent()->getFoo()
                 ]
             ]),
             $serialized
@@ -75,9 +75,9 @@ class EventContainerHandlerTest extends TestCase
         $eventClass = __NAMESPACE__ . '\SerializableEventStub';
         $data = [
             'type' => 'stub',
-            'event' => [
+            'data' => [
                 'name' => 'event.name',
-                'data' => 'some data'
+                'foo' => 'some data'
             ]
         ];
 
@@ -94,8 +94,8 @@ class EventContainerHandlerTest extends TestCase
 
         $this->assertInstanceOf($containerClass, $container);
         $this->assertInstanceOf($eventClass, $container->getEvent());
-        $this->assertEquals($data['event']['name'], $container->getEvent()->getName());
-        $this->assertEquals($data['event']['data'], $container->getEvent()->getData());
+        $this->assertEquals($data['data']['name'], $container->getEvent()->getName());
+        $this->assertEquals($data['data']['foo'], $container->getEvent()->getFoo());
     }
 
     /**
@@ -125,9 +125,9 @@ class EventContainerHandlerTest extends TestCase
         $eventClass = __NAMESPACE__ . '\SerializableEventStub';
         $data = [
             'type' => $eventClass,
-            'event' => [
+            'data' => [
                 'name' => 'event.name',
-                'data' => 'some data'
+                'foo' => 'some data'
             ]
         ];
 
@@ -144,7 +144,7 @@ class EventContainerHandlerTest extends TestCase
 
         $this->assertInstanceOf($containerClass, $container);
         $this->assertInstanceOf($eventClass, $container->getEvent());
-        $this->assertEquals($data['event']['name'], $container->getEvent()->getName());
-        $this->assertEquals($data['event']['data'], $container->getEvent()->getData());
+        $this->assertEquals($data['data']['name'], $container->getEvent()->getName());
+        $this->assertEquals($data['data']['foo'], $container->getEvent()->getFoo());
     }
 }
