@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <event type="stub">
+    <name><![CDATA[event.name]]></name>
+    <data><![CDATA[some data]]></data>
+  </event>
+</result>
