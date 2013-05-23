@@ -134,12 +134,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/chEbba/EventBand.git",
-                "reference": "1ec941865749e79b3368c0b03794f79a77c8fb99"
+                "reference": "704f63296c92726092c09193c0ae66077ebdd71a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/chEbba/EventBand/zipball/1ec941865749e79b3368c0b03794f79a77c8fb99",
-                "reference": "1ec941865749e79b3368c0b03794f79a77c8fb99",
+                "url": "https://api.github.com/repos/chEbba/EventBand/zipball/704f63296c92726092c09193c0ae66077ebdd71a",
+                "reference": "704f63296c92726092c09193c0ae66077ebdd71a",
                 "shasum": ""
             },
             "require": {
@@ -177,7 +177,7 @@
                 "message",
                 "queue"
             ],
-            "time": "2013-05-21 14:10:46"
+            "time": "2013-05-23 15:15:29"
         },
         {
             "name": "jms/metadata",
